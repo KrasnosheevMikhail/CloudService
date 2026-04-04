@@ -1,4 +1,4 @@
-package ru.netology.cloudService.entity;
+package ru.netology.cloudService.repository;
 
 import org.springframework.stereotype.Repository;
 
@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class AutorizationRepository {
+public class AuthorizationRepository {
     private final Map<String, String> tokenAndUserNames = new ConcurrentHashMap<>();
 
-    void putTokenAndUserName(String token, String username) {
+    public void putTokenAndUserName(String token, String username) {
         tokenAndUserNames.put(token, username);
     }
 
@@ -17,7 +17,7 @@ public class AutorizationRepository {
         return tokenAndUserNames.get(token);
     }
 
-    void removeTokenAndUserNameByToken(String token) {
+    public void removeTokenAndUserNameByToken(String token) {
         tokenAndUserNames.remove(token);
     }
 }

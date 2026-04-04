@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: migrations/users.xml
+      relativeToChangeLogFile: true
+  - include:
+      file: migrations/files.xml
+      relativeToChangeLogFile: true
