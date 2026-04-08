@@ -1,23 +1,17 @@
 package ru.netology.cloudService.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import ru.netology.cloudService.entity.Users;
-import ru.netology.cloudService.repository.AuthorizationRepository;
 import ru.netology.cloudService.repository.FileRepository;
-import ru.netology.cloudService.repository.UsersRepository;
 
-import java.util.Optional;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class FileServiceTest {
 
     @InjectMocks
@@ -26,35 +20,45 @@ class FileServiceTest {
     @Mock
     private FileRepository fileRepository;
 
-    @Mock
-    private AuthorizationRepository authorizationRepository;
-
-    @Mock
-    private UsersRepository userRepository;
 
     public static final String LOGIN_1 = "login1";
     public static final String PASSWORD_1 = "pass1";
-    public static final Users USER_1 = new Users(LOGIN_1, PASSWORD_1, null);
-    public static final String TOKEN = "token";
+
+    public static final Users USER_1 = Users.builder().login(LOGIN_1).password(PASSWORD_1).build();
+
     public static final String FILENAME_1 = "fileName1";
     public static final String FILENAME_2 = "fileName2";
 
-    @BeforeEach
-    void setUp() {
-        Mockito.when(authorizationRepository.getUserNameByToken(TOKEN)).thenReturn(LOGIN_1);
-        Mockito.when(userRepository.findByLogin(LOGIN_1)).thenReturn(Optional.of(USER_1));
+
+
+    @Test
+    void deleteFile_ShouldCallRepositoryMethod() {
+
+        fileService.deleteFile(USER_1, FILENAME_1);
+
+
+        Mockito.verify(fileRepository, Mockito.times(1))
+                .deleteByUserAndFileName(USER_1, FILENAME_1);
     }
 
     @Test
-    void deleteFile() {
-        fileService.deleteFile(TOKEN, FILENAME_1);
-        Mockito.verify(fileRepository, Mockito.times(1)).deleteByUserAndFileName(USER_1, FILENAME_1);
+    void editFileName_ShouldCallRepositoryMethod() {
+
+        fileService.editFileName(USER_1, FILENAME_1, FILENAME_2);
+
+
+        Mockito.verify(fileRepository, Mockito.times(1))
+                .editFileNameByUser(USER_1, FILENAME_1, FILENAME_2);
     }
 
     @Test
-    void editFileName() {
-        fileService.editFileName(TOKEN, FILENAME_1, FILENAME_2);
-        Mockito.verify(fileRepository, Mockito.times(1)).editFileNameByUser(USER_1, FILENAME_1, FILENAME_2);
-    }
+    void uploadFile_ShouldCallSaveOnRepository() {
 
+        fileService.uploadFile(USER_1, FILENAME_1, null);
+
+
+        Mockito.verify(fileRepository, Mockito.times(1)).save(any());
+
+
+    }
 }

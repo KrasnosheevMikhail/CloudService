@@ -7,7 +7,7 @@ import ru.netology.cloudService.entity.Users;
 import java.util.Optional;
 
 @Repository
-public interface UsersRepository extends JpaRepository<Users, String > {
+public interface UsersRepository extends JpaRepository<Users, String> {
 
     Optional<Users> findByLogin(String login);
 
