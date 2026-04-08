@@ -22,7 +22,7 @@ public class AuthorizationService {
     private TokenProvider tokenProvider;
     private AuthenticationManager authenticationManager;
 
-    public AuthorizationRepository login(AuthorizationRequest authorizationRequest) {
+    public AuthorizationResponse login(AuthorizationRequest authorizationRequest) {
         final String username = authorizationRequest.getLogin();
         final String password = authorizationRequest.getPassword();
         Authentication authentication = authenticationManager.authenticate
