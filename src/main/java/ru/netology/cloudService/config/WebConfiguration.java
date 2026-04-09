@@ -7,7 +7,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
-
     @Value("${cors.origins}")
     private String origins;
 
@@ -17,5 +16,4 @@ public class WebConfiguration implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .allowedOrigins(origins);
     }
-
 }

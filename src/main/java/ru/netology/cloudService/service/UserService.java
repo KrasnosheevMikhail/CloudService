@@ -15,9 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@AllArgsConstructor
 @Service
+@AllArgsConstructor
 public class UserService implements UserDetailsService {
+
     private final UsersRepository usersRepository;
 
     @Override
@@ -32,6 +33,5 @@ public class UserService implements UserDetailsService {
                 .password(user.getPassword())
                 .authorities(authorities)
                 .build();
-
     }
 }

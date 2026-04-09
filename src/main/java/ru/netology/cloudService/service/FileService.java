@@ -9,14 +9,13 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.netology.cloudService.entity.Files;
 import ru.netology.cloudService.entity.Users;
 import ru.netology.cloudService.exception.InputDataException;
-import ru.netology.cloudService.exception.UnauthorizedException;
-import ru.netology.cloudService.model.FileResponse;
 import ru.netology.cloudService.repository.FileRepository;
+import ru.netology.cloudService.repository.UsersRepository;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @AllArgsConstructor
@@ -25,20 +24,20 @@ import java.util.stream.Collectors;
 public class FileService {
 
     private final FileRepository fileRepository;
+    private final UsersRepository usersRepository;
 
 
     public void uploadFile(Users user, String filename, MultipartFile file) {
-
-
         try {
-            fileRepository.save(Files.builder()
+            Files newFile = Files.builder()
                     .fileName(filename)
                     .date(LocalDateTime.now())
                     .size(file.getSize())
                     .type(file.getContentType())
                     .content(file.getBytes())
                     .user(user)
-                    .build());
+                    .build();
+            fileRepository.save(newFile);
             log.info("User {} uploaded file {}", user.getLogin(), filename);
         } catch (IOException e) {
             log.error("Upload file error", e);
@@ -61,39 +60,14 @@ public class FileService {
         return file;
     }
 
-    public void editFileName(Users user, String filename, String newFileName) {
+    public List<Files> getAllFiles(Users user, Integer limit) {
+        log.info("User {} get all files", user.getLogin());
+        Sort sort = Sort.by("fileName").ascending();
+        List<Files> allFiles = fileRepository.findAllByUser(user, sort);
 
-        if (user == null) {
-            log.error("Edit file error");
-            throw new UnauthorizedException("Authorization error");
+        if (limit != null && limit > 0 && limit < allFiles.size()) {
+            return allFiles.subList(0, limit);
         }
-        if (newFileName != null) {
-            fileRepository.editFileNameByUser(user, filename, newFileName);
-            log.info("User {} edit file {}", user.getLogin(), filename);
-        } else {
-            throw new InputDataException("Error input data");
-        }
-    }
-
-    public List<FileResponse> getAllFiles(Users user, Integer limit) {
-
-        log.info("User {} is requesting file list", user.getLogin());
-
-
-        Sort sort = Sort.by(Sort.Direction.ASC, "fileName");
-
-
-        if (limit != null && limit > 0) {
-            return fileRepository.findAllByUser(user, Sort.by("fileName"))
-                    .stream()
-                    .map(f -> new FileResponse(f.getFileName(), f.getSize()))
-                    .collect(Collectors.toList());
-        } else {
-            return fileRepository.findAllByUser(user, sort).stream()
-                    .map(f -> new FileResponse(f.getFileName(), f.getSize()))
-                    .collect(Collectors.toList());
-        }
-
+        return allFiles;
     }
 }
-

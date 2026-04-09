@@ -1,5 +1,6 @@
 package ru.netology.cloudService.config;
 
+
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -18,11 +19,11 @@ import ru.netology.cloudService.service.UserService;
 
 import java.io.IOException;
 
-@Slf4j
+
 @Component
+@Slf4j
 @AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
     private UserService userService;
     private TokenProvider tokenProvider;
 
@@ -40,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.error("an error occurred during getting username from token", e);
             } catch (ExpiredJwtException e) {
                 log.warn("the token is expired and not valid anymore", e);
-            } catch(SignatureException e){
+            } catch (SignatureException e) {
                 log.error("Authentication Failed. Username or Password not valid.");
             }
         } else {
@@ -52,11 +53,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//                log.info("authenticated user " + username + ", setting security context");
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
         chain.doFilter(request, response);
     }
-
 }
